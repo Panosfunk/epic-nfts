@@ -1,19 +1,48 @@
 const main = async () => {
-    console.log("am i even running bro");
+    const axios = require('axios');
+    console.log("At least i can start though i cannot finish.");
     const nftContractFactory = await hre.ethers.getContractFactory("MyEpicNFT");
-    console.log("got factory");
+    console.log("NFT contract factory yay! \n");
     const nftContract = await nftContractFactory.deploy();
-    console.log("got contract", nftContract.address);
+    console.log("Small ", nftContract.address, "\n");
     await nftContract.deployed();
-    console.log("NFT contract deployed to: ", nftContract.address);
+    console.log("NFT contract deployed to: ", nftContract.address, "\n");
 
-    let txn = await nftContract.makeAnEpicNFT();
-    await txn.wait();
+    let randomWordBase64 = await nftContract.generateRandomJsonData();
+    randomWordBase64 = Buffer.from(randomWordBase64, 'base64');
+    let randomWordJson = JSON.parse(randomWordBase64);
+
+    console.log(randomWordJson);
+    var config = {
+        method: 'post',
+        url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'pinata_api_key': `${process.env.REACT_APP_PINATA_API_KEY}`,
+            'pinata_secret_api_key': `${process.env.REACT_APP_PINATA_API_SECRET}`,
+        },
+        data : 
+        {
+            "name": randomWordJson.name,
+            "description": randomWordJson.description,
+            "data": randomWordJson.image
+        }
+    };
+
+    const res = await axios(config);
     
-    // Mint another NFT for fun.
-    txn = await nftContract.makeAnEpicNFT();
-    // Wait for it to be mined.
+    const tokenURI = `ipfs://${res.data.IpfsHash}`;
+    console.log(tokenURI);
+    let txn = await nftContract.makeAnEpicNFT(tokenURI);
     await txn.wait();
+    console.log("NFT #1 deployed");
+    
+    // // Mint another NFT for fun.
+    // randomWord = await nftContract.generateRandomStringData();
+    // txn = await nftContract.makeAnEpicNFT(randomWord);
+    // // Wait for it to be mined.
+    // await txn.wait();
+    // console.log("NFT #2 deployed");
 };
 
 const runMain = async () => {
@@ -27,3 +56,22 @@ const runMain = async () => {
 };
 
 runMain();
+
+// const main = async () => {
+//     const nftContractFactory = await hre.ethers.getContractFactory('MyEpicNFT');
+//     const nftContract = await nftContractFactory.deploy();
+//     await nftContract.deployed();
+//     console.log("Contract deployed to:", nftContract.address);
+//   };
+  
+//   const runMain = async () => {
+//     try {
+//       await main();
+//       process.exit(0);
+//     } catch (error) {
+//       console.log(error);
+//       process.exit(1);
+//     }
+//   };
+  
+//   runMain();
