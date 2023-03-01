@@ -1,10 +1,7 @@
 const main = async () => {
     const axios = require('axios');
-    console.log("At least i can start though i cannot finish.");
     const nftContractFactory = await hre.ethers.getContractFactory("MyEpicNFT");
-    console.log("NFT contract factory yay! \n");
     const nftContract = await nftContractFactory.deploy();
-    console.log("Small ", nftContract.address, "\n");
     await nftContract.deployed();
     console.log("NFT contract deployed to: ", nftContract.address, "\n");
 
@@ -12,7 +9,6 @@ const main = async () => {
     randomWordBase64 = Buffer.from(randomWordBase64, 'base64');
     let randomWordJson = JSON.parse(randomWordBase64);
 
-    console.log(randomWordJson);
     var config = {
         method: 'post',
         url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
@@ -25,7 +21,7 @@ const main = async () => {
         {
             "name": randomWordJson.name,
             "description": randomWordJson.description,
-            "data": randomWordJson.image
+            "image": randomWordJson.image
         }
     };
 
@@ -33,6 +29,7 @@ const main = async () => {
     
     const tokenURI = `ipfs://${res.data.IpfsHash}`;
     console.log(tokenURI);
+
     let txn = await nftContract.makeAnEpicNFT(tokenURI);
     await txn.wait();
     console.log("NFT #1 deployed");

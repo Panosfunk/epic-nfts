@@ -19,11 +19,7 @@ contract MyEpicNFT is ERC721URIStorage{
     string[] secondWords = ["of", "of", "of", "of", "of", "of"];
     string[] thirdWords = ["Legends", "WarCraft", "Myths", "Clans", "Players", "Gamers"];
 
-    string baseSvg = 
-    "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'>"
-    "<style>.base { fill: white; font-family: serif; font-size: 24px; }</style>"
-    "<rect width='100%' height='100%' fill='black' />"
-    "<text x='50%' y='50%' class='base' dominant-baseline='middle' text-anchor='middle'>";
+    string baseSvg = "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='black' /><text x='50%' y='50%' class='base' dominant-baseline='middle' text-anchor='middle'>";
 
     string closingSvg = "</text></svg>";
 
@@ -59,28 +55,17 @@ contract MyEpicNFT is ERC721URIStorage{
                 )
             )
         );
-
-        console.log("base64", Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{'
-                            '"name": "', combinedWord, '", '
-                            '"description": "A highly acclaimed collection of squares.", '
-                            '"image": "data:image/svg+xml;base64,', Base64.encode(bytes(finalSvg)), '"'
-                        '}'
-                    )
-                )
-            )
-        ), "\n\n");
-        // console.log(string(abi.encodePacked(json)));
         return json;
 
     }
 
     function makeAnEpicNFT(string memory finalTokenUri) public {
+        
         uint256 newItemId = _tokenIds.current();
         
+        console.log("\n--------------------------------------------------------");
+        console.log("Final tokenURI\n", finalTokenUri);
+        console.log("--------------------------------------------------------\n");
 
         _safeMint(msg.sender, newItemId);
 
